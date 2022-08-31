@@ -25,7 +25,7 @@ const registerCommands = () => {
             commands.push(new TagCommand(tag));
         }
     }).then(() => {
-        return rest.put(Routes.applicationGuildCommands(APPLICATION_ID, "789803705108398082"), {
+        return rest.put(Routes.applicationCommands(APPLICATION_ID), {
             body: commands.map(c => c.definition)/* && [
                 {
                     type: 3,
