@@ -1,0 +1,20 @@
+import { Client } from "discord.js";
+import { commandHandler, messageHandler, registerCommands } from "./commands/commands";
+import { BOT_TOKEN, CURRENT_VERSION } from "./constants";
+
+const client = new Client({
+    intents: ["DirectMessages","DirectMessageTyping","DirectMessageReactions","GuildMessages","GuildMessageTyping","GuildMessageReactions"]
+});
+
+client.on("ready", () => {
+    console.log("DanBooru bot online. Version v" + CURRENT_VERSION);
+});
+
+client.on("interactionCreate", (interaction) => {
+    if(interaction.isChatInputCommand()) return commandHandler(interaction);
+    if(interaction.isMessageContextMenuCommand()) return messageHandler(interaction);
+});
+
+registerCommands().then(() => {
+    return client.login(BOT_TOKEN);
+}).catch(console.error);
