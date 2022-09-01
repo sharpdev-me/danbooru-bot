@@ -16,4 +16,4 @@ export const DEFAULT_SEARCH = "-status:deleted rating:g filetype:png,jpg score:>
 
 export const DANBOORU_URL = "https://danbooru.donmai.us";
 
-export const FILE_LOGGER = new FileLogger(process.env.DANBOORU_LOGFILE || (__dirname + "log.log"));
+export const FILE_LOGGER = new FileLogger(process.env.DANBOORU_LOGFILE || (__dirname + "/log.log"));
