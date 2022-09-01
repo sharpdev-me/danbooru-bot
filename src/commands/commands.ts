@@ -60,12 +60,12 @@ const messageHandler = (interaction: MessageContextMenuCommandInteraction) => {
         }).catch(error => {
             FILE_LOGGER.log(error);
             if(error.response) {
-                return interaction.followUp("There was an error getting the response from DanBooru.");
+                return interaction.followUp("There was an error getting the response from DanBooru.").catch(FILE_LOGGER.log);
             } else if(error.request) {
-                return interaction.followUp("There was an error making the request to DanBooru.");
+                return interaction.followUp("There was an error making the request to DanBooru.").catch(FILE_LOGGER.log);
             } else {
                 console.dir(error);
-                return interaction.followUp("An unknown error has occurred.");
+                return interaction.followUp("An unknown error has occurred.").catch(FILE_LOGGER.log);
             }
         })
     }

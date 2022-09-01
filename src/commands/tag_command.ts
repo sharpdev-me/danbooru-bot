@@ -25,10 +25,13 @@ class TagCommand extends BaseCommand {
         }).catch(error => {
             FILE_LOGGER.log(error);
             if(error.response) {
-                return interaction.followUp("There was an error getting the response from DanBooru.");
+                if(error.response.status == 404) {
+                    return interaction.followUp("There weren't any posts found that match your query!").catch(FILE_LOGGER.log);
+                }
+                return interaction.followUp("There was an error getting the response from DanBooru.").catch(FILE_LOGGER.log);
             } else if(error.request) {
-                return interaction.followUp("There was an error making the request to DanBooru.");
-            } else return interaction.followUp("An unknown error has occurred.");
+                return interaction.followUp("There was an error making the request to DanBooru.").catch(FILE_LOGGER.log);
+            } else return interaction.followUp("An unknown error has occurred.").catch(FILE_LOGGER.log);
         });
     };
 }
