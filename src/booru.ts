@@ -21,6 +21,11 @@ export const getTopTags = async (count: number): Promise<BooruTag[]> => {
             id: -1,
             name: "catgirl",
             post_count: 38784
+        },
+        {
+            id: -1,
+            name: "yuri",
+            post_count: 130000
         }
     ];
 }
