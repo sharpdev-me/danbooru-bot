@@ -9,7 +9,7 @@ type ApplicationCommandStructure = {
 abstract class BaseCommand {
     constructor(public definition: ApplicationCommandStructure) { }
 
-    abstract handle: (interaction: ChatInputCommandInteraction) => void;
+    abstract handle: (interaction: ChatInputCommandInteraction) => Promise<void> | void;
 }
 
 export default BaseCommand;
