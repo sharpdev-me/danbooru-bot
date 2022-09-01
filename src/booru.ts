@@ -16,7 +16,13 @@ export const getTopTags = async (count: number): Promise<BooruTag[]> => {
             }
         }
     );
-    return response.data;
+    return response.data && [
+        {
+            id: -1,
+            name: "catgirl",
+            post_count: 38784
+        }
+    ];
 }
 
 export const getRandomImage = async (query: string, append: boolean): Promise<string> => {
