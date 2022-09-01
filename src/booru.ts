@@ -16,7 +16,8 @@ export const getTopTags = async (count: number): Promise<BooruTag[]> => {
             }
         }
     );
-    return response.data && [
+    const list: BooruTag[] = response.data;
+    list.push(
         {
             id: -1,
             name: "catgirl",
@@ -27,7 +28,9 @@ export const getTopTags = async (count: number): Promise<BooruTag[]> => {
             name: "yuri",
             post_count: 130000
         }
-    ];
+    );
+
+    return list;
 }
 
 export const getRandomImage = async (query: string, append: boolean): Promise<string> => {
@@ -40,6 +43,6 @@ export const getRandomImage = async (query: string, append: boolean): Promise<st
             }
         }
     ).then(response => {
-        return response.data.file_url
+        return response.data.file_url;
     });
 }

@@ -25,14 +25,9 @@ const registerCommands = () => {
             commands.push(new TagCommand(tag));
         }
     }).then(() => {
-        return rest.put(Routes.applicationCommands(APPLICATION_ID), {
-            body: commands.map(c => c.definition)/* && [
-                {
-                    type: 3,
-                    name: "Random Image"
-                }
-            ]*/ // there's some crazy issue happening here where the channel isn't in the cache
-        });
+        return rest.put(Routes.applicationGuildCommands(APPLICATION_ID, "789803705108398082"), {
+            body: commands.map(c => c.definition)
+        }).then(console.dir).catch(console.error);
     });
 }
 
