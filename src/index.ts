@@ -8,6 +8,7 @@ const client = new Client({
 
 client.on("ready", () => {
     console.log("DanBooru bot online. Version v" + CURRENT_VERSION);
+    FILE_LOGGER.log("DanBooru bot online. Version v" + CURRENT_VERSION);
 });
 
 client.on("interactionCreate", (interaction) => {

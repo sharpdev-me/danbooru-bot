@@ -7,6 +7,6 @@ interface Logger {
 export class FileLogger implements Logger {
     constructor(public path: string) { }
     public log = (data: any) => {
-        writeFileSync(this.path, String(data));
+        writeFileSync(this.path, `[${new Date().toTimeString()}] ` + String(data), {flag: "a"});
     }
 }
