@@ -21,6 +21,12 @@ class RandomCommand extends BaseCommand {
                     type: ApplicationCommandOptionType.Boolean,
                     description: `Appends the search query to the default search`,
                     required: false
+                },
+                {
+                    name: "private",
+                    type: ApplicationCommandOptionType.Boolean,
+                    description: "If set to true, only you will be able to see the message",
+                    required: false
                 }
             ]
         })
@@ -30,6 +36,9 @@ class RandomCommand extends BaseCommand {
         let append = interaction.options.getBoolean("append");
         if(append === null) append = true;
 
+        let ephemeral = interaction.options.getBoolean("private");
+        if(ephemeral === null) ephemeral = false;
+
         let searchQuery = interaction.options.getString("search", false);
         if(searchQuery == null) {
             append = false;
@@ -37,7 +46,7 @@ class RandomCommand extends BaseCommand {
         }
         
         await interaction.deferReply({
-            ephemeral: false
+            ephemeral: ephemeral
         });
 
         getRandomImage(searchQuery, append).then(url => {
@@ -47,7 +56,7 @@ class RandomCommand extends BaseCommand {
                 ]
             });
         }).catch(error => {
-            FILE_LOGGER.log(error);
+            FILE_LOGGER.log(`(query: ${append}, ${searchQuery}) ${error}`);
             if(error.response) {
                 if(error.response.status == 404) {
                     return interaction.followUp("There weren't any posts found that match your query!").catch(FILE_LOGGER.log);

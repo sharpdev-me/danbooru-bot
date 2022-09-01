@@ -1,4 +1,4 @@
-import { ChatInputCommandInteraction, CacheType } from "discord.js";
+import { ChatInputCommandInteraction, CacheType, ApplicationCommandOptionType } from "discord.js";
 import { BooruTag, getRandomImage } from "../booru";
 import { FILE_LOGGER } from "../constants";
 import BaseCommand from "./base_command";
@@ -7,13 +7,24 @@ class TagCommand extends BaseCommand {
     constructor(public tag: BooruTag) {
         super({
             name: tag.name,
-            description: "Gets a random post from the " + tag.name + " tag."
+            description: "Gets a random post from the " + tag.name + " tag.",
+            options: [
+                {
+                    name: "private",
+                    type: ApplicationCommandOptionType.Boolean,
+                    description: "If set to true, only you will be able to see the message",
+                    required: false
+                }
+            ]
         });
     }
 
     public handle = async (interaction: ChatInputCommandInteraction<CacheType>) => {
+        let ephemeral = interaction.options.getBoolean("private");
+        if(ephemeral === null) ephemeral = false;
+
         await interaction.deferReply({
-            ephemeral: false
+            ephemeral: ephemeral
         });
 
         getRandomImage(this.tag.name, true).then(url => {
