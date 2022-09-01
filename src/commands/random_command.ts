@@ -1,7 +1,7 @@
 import axios from "axios";
 import { ApplicationCommandOptionType, Attachment, CacheType, ChatInputCommandInteraction, MessagePayload } from "discord.js";
 import { getRandomImage } from "../booru";
-import { DANBOORU_URL, DEFAULT_SEARCH } from "../constants";
+import { DANBOORU_URL, DEFAULT_SEARCH, FILE_LOGGER } from "../constants";
 import BaseCommand from "./base_command";
 
 class RandomCommand extends BaseCommand {
@@ -47,6 +47,7 @@ class RandomCommand extends BaseCommand {
                 ]
             });
         }).catch(error => {
+            FILE_LOGGER.log(error);
             if(error.response) {
                 return interaction.followUp("There was an error getting the response from DanBooru.");
             } else if(error.request) {

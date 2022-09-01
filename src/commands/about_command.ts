@@ -1,5 +1,5 @@
 import { ChatInputCommandInteraction, CacheType, EmbedBuilder } from "discord.js";
-import { CURRENT_VERSION, DEFAULT_SEARCH, GUILD_COUNT } from "../constants";
+import { CURRENT_VERSION, DEFAULT_SEARCH, FILE_LOGGER, GUILD_COUNT } from "../constants";
 import BaseCommand from "./base_command";
 
 class AboutCommand extends BaseCommand {
@@ -28,7 +28,7 @@ class AboutCommand extends BaseCommand {
         interaction.reply({
             embeds: [builder],
             ephemeral: true
-        });
+        }).catch(FILE_LOGGER.log);
     };
 }
 

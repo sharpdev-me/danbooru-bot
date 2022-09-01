@@ -1,4 +1,5 @@
 import { Client } from "discord.js";
+import { FileLogger } from "./logging";
 
 export const CURRENT_VERSION = "1.0.0";
 
@@ -14,3 +15,5 @@ export const BOT_TOKEN: string = process.env.DANBOORU_TOKEN!;
 export const DEFAULT_SEARCH = "-status:deleted rating:g filetype:png,jpg score:>5 favcount:>10";
 
 export const DANBOORU_URL = "https://danbooru.donmai.us";
+
+export const FILE_LOGGER = new FileLogger("log.log");

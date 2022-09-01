@@ -1,5 +1,6 @@
 import { ChatInputCommandInteraction, CacheType } from "discord.js";
 import { BooruTag, getRandomImage } from "../booru";
+import { FILE_LOGGER } from "../constants";
 import BaseCommand from "./base_command";
 
 class TagCommand extends BaseCommand {
@@ -22,6 +23,7 @@ class TagCommand extends BaseCommand {
                 ]
             });
         }).catch(error => {
+            FILE_LOGGER.log(error);
             if(error.response) {
                 return interaction.followUp("There was an error getting the response from DanBooru.");
             } else if(error.request) {

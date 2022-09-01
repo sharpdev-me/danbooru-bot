@@ -1,6 +1,6 @@
 import { ChatInputCommandInteraction, MessageContextMenuCommandInteraction, REST, Routes } from "discord.js";
 import { getRandomImage, getTopTags } from "../booru";
-import { APPLICATION_ID, BOT_TOKEN } from "../constants";
+import { APPLICATION_ID, BOT_TOKEN, FILE_LOGGER } from "../constants";
 
 import AboutCommand from "./about_command";
 import BaseCommand from "./base_command";
@@ -58,6 +58,7 @@ const messageHandler = (interaction: MessageContextMenuCommandInteraction) => {
                 ]
             });
         }).catch(error => {
+            FILE_LOGGER.log(error);
             if(error.response) {
                 return interaction.followUp("There was an error getting the response from DanBooru.");
             } else if(error.request) {

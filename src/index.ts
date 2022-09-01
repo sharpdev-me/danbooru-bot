@@ -1,6 +1,6 @@
 import { Client } from "discord.js";
 import { commandHandler, messageHandler, registerCommands } from "./commands/commands";
-import { BOT_TOKEN, CURRENT_VERSION } from "./constants";
+import { BOT_TOKEN, CURRENT_VERSION, FILE_LOGGER } from "./constants";
 
 const client = new Client({
     intents: ["DirectMessages","DirectMessageTyping","DirectMessageReactions","GuildMessages","GuildMessageTyping","GuildMessageReactions"]
@@ -17,4 +17,4 @@ client.on("interactionCreate", (interaction) => {
 
 registerCommands().then(() => {
     return client.login(BOT_TOKEN);
-}).catch(console.error);
+}).catch(FILE_LOGGER.log);
