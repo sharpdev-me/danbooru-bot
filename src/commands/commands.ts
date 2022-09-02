@@ -1,11 +1,13 @@
 import { ChatInputCommandInteraction, MessageContextMenuCommandInteraction, REST, Routes } from "discord.js";
 import { getRandomImage, getTopTags } from "../booru";
-import { APPLICATION_ID, BOT_TOKEN, DEV_ENVIRONMENT, DEV_SERVER, FILE_LOGGER } from "../constants";
+import { APPLICATION_ID, BOT_TOKEN, DEV_ENVIRONMENT, DEV_SERVER, DEFAULT_LOGGER } from "../constants";
 
 import AboutCommand from "./about_command";
 import BaseCommand from "./base_command";
+import ChannelsCommand from "./channels_command";
 import HelpCommand from "./help_command";
 import RandomCommand from "./random_command";
+import SettingsCommand from "./settings_command";
 import TagCommand from "./tag_command";
 
 const rest = new REST({version: "10"}).setToken(BOT_TOKEN);
@@ -14,6 +16,8 @@ const commands: BaseCommand[] = [
     new AboutCommand(),
     new RandomCommand(),
     new HelpCommand(),
+    new SettingsCommand(),
+    new ChannelsCommand(),
 ];
 
 const validationRegex = /^[-_\p{L}\p{N}\p{sc=Deva}\p{sc=Thai}]{1,32}$/u;
@@ -51,32 +55,4 @@ const commandHandler = (interaction: ChatInputCommandInteraction) => {
     if(r instanceof Promise) r.catch(console.error);
 }
 
-const messageHandler = (interaction: MessageContextMenuCommandInteraction) => {
-    if(interaction.commandName == "Random Image") {
-        getRandomImage("", true).then(async url => {
-            await interaction.deferReply({
-                ephemeral: true
-            });
-            
-            // for some reason, the channel here isn't in the cache when we try to reply to it
-            const message = await interaction.targetMessage.fetch(true);
-            return message.reply({
-                files: [
-                    url
-                ]
-            });
-        }).catch(error => {
-            FILE_LOGGER.log(error);
-            if(error.response) {
-                return interaction.followUp("There was an error getting the response from DanBooru.").catch(FILE_LOGGER.log);
-            } else if(error.request) {
-                return interaction.followUp("There was an error making the request to DanBooru.").catch(FILE_LOGGER.log);
-            } else {
-                console.dir(error);
-                return interaction.followUp("An unknown error has occurred.").catch(FILE_LOGGER.log);
-            }
-        })
-    }
-}
-
-export { registerCommands, commandHandler, messageHandler };
+export { registerCommands, commandHandler };

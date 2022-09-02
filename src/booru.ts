@@ -1,5 +1,7 @@
 import axios from "axios";
-import { DANBOORU_URL, DEFAULT_SEARCH } from "./constants";
+import { ChatInputCommandInteraction, Snowflake } from "discord.js";
+import { DANBOORU_URL, DEFAULT_LOGGER, DEFAULT_SEARCH } from "./constants";
+import { getGuildSettings } from "./database";
 
 export type BooruTag = {
     id: number;
@@ -33,8 +35,18 @@ export const getTopTags = async (count: number): Promise<BooruTag[]> => {
     return list;
 }
 
-export const getRandomImage = async (query: string, append: boolean): Promise<string> => {
-    const search = append ? DEFAULT_SEARCH + ` ${query}` : query || DEFAULT_SEARCH;
+export const getRandomImage = async (query: string, append: boolean, interaction: ChatInputCommandInteraction): Promise<{url: string, nsfw: boolean}> => {
+    let qq = DEFAULT_SEARCH;
+    if(interaction.guildId) {
+        const settings = await getGuildSettings(interaction.guildId).catch(DEFAULT_LOGGER.log);
+        if(!settings) throw new Error("getGuildSettings returned void");
+        qq = settings.defaultSearch;
+
+        const u = settings.channelDefaultSearches[interaction.channelId];
+        if(u != null && u != undefined) qq = u;
+    }
+    
+    const search = append ? qq + ` ${query}` : query || qq;
     return axios.get(
         DANBOORU_URL + `/posts/random.json?tags=${encodeURIComponent(search)}`,
         {
@@ -43,6 +55,9 @@ export const getRandomImage = async (query: string, append: boolean): Promise<st
             }
         }
     ).then(response => {
-        return response.data.file_url;
+        return {
+            url: response.data.file_url,
+            nsfw: response.data.rating == "q" || response.data.rating == "e"
+        };
     });
 }

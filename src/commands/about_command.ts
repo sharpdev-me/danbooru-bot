@@ -1,5 +1,6 @@
 import { ChatInputCommandInteraction, CacheType, EmbedBuilder } from "discord.js";
-import { CURRENT_VERSION, DEFAULT_SEARCH, FILE_LOGGER, GUILD_COUNT } from "../constants";
+import { CURRENT_VERSION, DEFAULT_SEARCH, DEFAULT_LOGGER, GUILD_COUNT } from "../constants";
+import { getGuildSettings } from "../database";
 import BaseCommand from "./base_command";
 
 class AboutCommand extends BaseCommand {
@@ -10,8 +11,14 @@ class AboutCommand extends BaseCommand {
         })
     }
 
-    public handle = (interaction: ChatInputCommandInteraction<CacheType>) => {
+    public handle = async (interaction: ChatInputCommandInteraction<CacheType>) => {
         interaction.ephemeral = true;
+
+        let qq = DEFAULT_SEARCH;
+        if(interaction.guildId) {
+            const settings = await getGuildSettings(interaction.guildId);
+            qq = settings.defaultSearch;
+        }
 
         const builder = new EmbedBuilder();
 
@@ -22,13 +29,13 @@ class AboutCommand extends BaseCommand {
         builder.addFields(
             {name: "Version", value: CURRENT_VERSION, inline: true},
             {name: "Guild Count", value: String(GUILD_COUNT(interaction.client)), inline: true},
-            {name: "Default Search", value: DEFAULT_SEARCH, inline: false}
+            {name: "Default Search", value: qq, inline: false}
         );
 
         interaction.reply({
             embeds: [builder],
             ephemeral: true
-        }).catch(FILE_LOGGER.log);
+        }).catch(DEFAULT_LOGGER.log);
     };
 }
 

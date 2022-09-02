@@ -4,6 +4,8 @@ type ApplicationCommandStructure = {
     name: string;
     description: string;
     options?: ApplicationCommandOption[];
+    default_member_permissions?: string;
+    dm_permission?: boolean;
 }
 
 abstract class BaseCommand {

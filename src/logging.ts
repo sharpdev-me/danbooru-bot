@@ -10,3 +10,9 @@ export class FileLogger implements Logger {
         writeFileSync(this.path, `[${new Date().toTimeString()}] ` + String(data) + "\n", {flag: "a"});
     }
 }
+
+export class ConsoleLogger implements Logger {
+    public log = (data: any) => {
+        console.log(`[${new Date().toTimeString()}] ` + String(data));
+    }
+}

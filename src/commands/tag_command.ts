@@ -1,6 +1,7 @@
 import { ChatInputCommandInteraction, CacheType, ApplicationCommandOptionType } from "discord.js";
 import { BooruTag, getRandomImage } from "../booru";
-import { FILE_LOGGER } from "../constants";
+import { DEFAULT_LOGGER } from "../constants";
+import { getGuildSettings } from "../database";
 import BaseCommand from "./base_command";
 
 class TagCommand extends BaseCommand {
@@ -27,22 +28,33 @@ class TagCommand extends BaseCommand {
             ephemeral: ephemeral
         });
 
-        getRandomImage(this.tag.name, true).then(url => {
+        let allowNSFW = true;
+        if(interaction.guildId) {
+            const settings = await getGuildSettings(interaction.guildId);
+            if(settings.whitelistNSFW) {
+                allowNSFW = false;
+
+                if(settings.nsfwChannels.includes(interaction.channelId)) allowNSFW = true;
+            }
+        }
+
+        getRandomImage(this.tag.name, true, interaction).then(res => {
+            if(res.nsfw && !allowNSFW) return interaction.followUp("This server does not allow NSFW images in this channel.");
             return interaction.followUp({
                 files: [
-                    url
+                    res.url
                 ]
             });
         }).catch(error => {
-            FILE_LOGGER.log(error);
+            DEFAULT_LOGGER.log(error);
             if(error.response) {
                 if(error.response.status == 404) {
-                    return interaction.followUp("There weren't any posts found that match your query!").catch(FILE_LOGGER.log);
+                    return interaction.followUp("There weren't any posts found that match your query!").catch(DEFAULT_LOGGER.log);
                 }
-                return interaction.followUp("There was an error getting the response from DanBooru.").catch(FILE_LOGGER.log);
+                return interaction.followUp("There was an error getting the response from DanBooru.").catch(DEFAULT_LOGGER.log);
             } else if(error.request) {
-                return interaction.followUp("There was an error making the request to DanBooru.").catch(FILE_LOGGER.log);
-            } else return interaction.followUp("An unknown error has occurred.").catch(FILE_LOGGER.log);
+                return interaction.followUp("There was an error making the request to DanBooru.").catch(DEFAULT_LOGGER.log);
+            } else return interaction.followUp("An unknown error has occurred.").catch(DEFAULT_LOGGER.log);
         });
     };
 }
