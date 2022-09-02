@@ -1,27 +1,26 @@
 import { ChatInputCommandInteraction, CacheType, ApplicationCommandOptionType } from "discord.js";
 import { BooruTag, getRandomImage } from "../booru";
-import { DEFAULT_LOGGER } from "../constants";
+import { DEFAULT_LOGGER, DEV_ENVIRONMENT } from "../constants";
 import { getGuildSettings } from "../database";
-import BaseCommand from "./base_command";
+import BaseCommand, { ApplicationCommandStructure } from "./base_command";
 
-class TagCommand extends BaseCommand {
-    constructor(public tag: BooruTag) {
-        super({
-            name: tag.name,
-            description: "Gets a random post from the " + tag.name + " tag.",
-            options: [
-                {
-                    name: "private",
-                    type: ApplicationCommandOptionType.Boolean,
-                    description: "If set to true, only you will be able to see the message",
-                    required: false
-                }
-            ]
-        });
-    }
+const tagDefinition = (tag: string): ApplicationCommandStructure => {
+    return {
+        name: (DEV_ENVIRONMENT ? "t_" : "") + tag,
+        description: "Gets a random post from the " + tag + " tag.",
+        options: [
+            {
+                name: "private",
+                type: ApplicationCommandOptionType.Boolean,
+                description: "If set to true, only you will be able to see the message",
+                required: false
+            }
+        ]
+    };
+}
 
-    public handle = async (interaction: ChatInputCommandInteraction<CacheType>) => {
-        let ephemeral = interaction.options.getBoolean("private");
+const tagHandle = async (interaction: ChatInputCommandInteraction) => {
+    let ephemeral = interaction.options.getBoolean("private");
         if(ephemeral === null) ephemeral = false;
 
         await interaction.deferReply({
@@ -38,7 +37,7 @@ class TagCommand extends BaseCommand {
             }
         }
 
-        getRandomImage(this.tag.name, true, interaction).then(res => {
+        getRandomImage(interaction.commandName.replace("t_", ""), true, interaction).then(res => {
             if(res.nsfw && !allowNSFW) return interaction.followUp("This server does not allow NSFW images in this channel.");
             return interaction.followUp({
                 files: [
@@ -56,7 +55,6 @@ class TagCommand extends BaseCommand {
                 return interaction.followUp("There was an error making the request to DanBooru.").catch(DEFAULT_LOGGER.log);
             } else return interaction.followUp("An unknown error has occurred.").catch(DEFAULT_LOGGER.log);
         });
-    };
 }
 
-export default TagCommand;
+export { tagDefinition, tagHandle };

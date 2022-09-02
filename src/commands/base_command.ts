@@ -1,6 +1,6 @@
-import { ApplicationCommandOption, ChatInputCommandInteraction } from "discord.js";
+import { ApplicationCommandOption, ChatInputCommandInteraction, InteractionResponse, Message } from "discord.js";
 
-type ApplicationCommandStructure = {
+export type ApplicationCommandStructure = {
     name: string;
     description: string;
     options?: ApplicationCommandOption[];
@@ -11,7 +11,7 @@ type ApplicationCommandStructure = {
 abstract class BaseCommand {
     constructor(public definition: ApplicationCommandStructure) { }
 
-    abstract handle: (interaction: ChatInputCommandInteraction) => Promise<void> | void;
+    abstract handle: (interaction: ChatInputCommandInteraction) => Promise<void | Message | InteractionResponse> | void;
 }
 
 export default BaseCommand;

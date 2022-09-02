@@ -1,5 +1,6 @@
 import { Snowflake } from "discord.js";
 import { Db, MongoClient } from "mongodb";
+import { BooruTag } from "./booru";
 import { DEFAULT_SEARCH, MONGO_URI } from "./constants";
 
 const v: any = {};

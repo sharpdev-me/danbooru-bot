@@ -18,21 +18,21 @@ export const getTopTags = async (count: number): Promise<BooruTag[]> => {
             }
         }
     );
-    const list: BooruTag[] = response.data;
-    list.push(
+
+    return response.data;
+}
+
+export const getTag = async (tag: string): Promise<BooruTag | null> => {
+    const response = await axios.get(
+        DANBOORU_URL + `/tags.json?search[order]=count&search[name_or_alias_matches]=${tag}&limit=1`,
         {
-            id: -1,
-            name: "catgirl",
-            post_count: 38784
-        },
-        {
-            id: -1,
-            name: "yuri",
-            post_count: 130000
+            headers: {
+                "Content-Type": "application/json"
+            }
         }
     );
-
-    return list;
+    
+    return response.data[0];
 }
 
 export const getRandomImage = async (query: string, append: boolean, interaction: ChatInputCommandInteraction): Promise<{url: string, nsfw: boolean}> => {
