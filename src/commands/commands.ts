@@ -1,4 +1,4 @@
-import { ChatInputCommandInteraction, MessageContextMenuCommandInteraction, REST, Routes, Snowflake } from "discord.js";
+import { ApplicationCommand, ChatInputCommandInteraction, MessageContextMenuCommandInteraction, REST, Routes, Snowflake } from "discord.js";
 import { getRandomImage, getTopTags } from "../booru";
 import { APPLICATION_ID, BOT_TOKEN, DEV_ENVIRONMENT, DEV_SERVER, DEFAULT_LOGGER } from "../constants";
 
@@ -8,6 +8,7 @@ import BaseCommand, { ApplicationCommandStructure } from "./base_command";
 import ChannelsCommand from "./channels_command";
 import HelpCommand from "./help_command";
 import RandomCommand from "./random_command";
+import RemoveTagCommand from "./remove_tag_command";
 import SettingsCommand from "./settings_command";
 import { tagDefinition, tagHandle } from "./tag_command";
 
@@ -20,6 +21,7 @@ const commands: BaseCommand[] = [
     new SettingsCommand(),
     new ChannelsCommand(),
     new AddTagCommand(),
+    new RemoveTagCommand(),
 ];
 
 const validationRegex = /^[-_\p{L}\p{N}\p{sc=Deva}\p{sc=Thai}]{1,32}$/u;
@@ -58,8 +60,18 @@ const registerTagCommand = (definition: ApplicationCommandStructure, guildID: Sn
     });
 }
 
+const removeTagCommand = async (name: string, guildID: Snowflake) => {
+    const commands = (await rest.get(Routes.applicationGuildCommands(APPLICATION_ID, guildID))) as ApplicationCommand[];
+    const c = commands.find(v => v.name == name);
+    if(!c) return false;
+
+    await rest.delete(Routes.applicationGuildCommand(APPLICATION_ID, guildID, c.id));
+    return true;
+}
+
 const commandHandler = (interaction: ChatInputCommandInteraction) => {
     if(DEV_ENVIRONMENT && !interaction.commandName.startsWith("t_")) return;
+    
     const i = commands.findIndex(v => v.definition.name == interaction.commandName);
     if(i == -1) return tagHandle(interaction);
 
@@ -67,4 +79,4 @@ const commandHandler = (interaction: ChatInputCommandInteraction) => {
     if(r instanceof Promise) r.catch(DEFAULT_LOGGER.log);
 }
 
-export { registerCommands, commandHandler, registerTagCommand };
+export { registerCommands, commandHandler, registerTagCommand, removeTagCommand };

@@ -1,21 +1,19 @@
 import { ApplicationCommandOptionType, ChatInputCommandInteraction } from "discord.js";
-import { getTag } from "../booru";
 import { DEFAULT_LOGGER } from "../constants";
 import BaseCommand from "./base_command";
-import { registerTagCommand } from "./commands";
-import { tagDefinition } from "./tag_command";
+import { removeTagCommand } from "./commands";
 
-class AddTagCommand extends BaseCommand {
+class RemoveTagCommand extends BaseCommand {
     constructor() {
         super({
-            name: "add_tag",
-            description: "Adds a new convenience tag to your server's commands.",
+            name: "remove_tag",
+            description: "Removes one of the added tags from your server.",
             default_member_permissions: "0",
             dm_permission: false,
             options: [
                 {
                     name: "tag",
-                    description: "The name of the tag to add",
+                    description: "The name of the tag to remove",
                     type: ApplicationCommandOptionType.String,
                     required: true
                 }
@@ -30,19 +28,17 @@ class AddTagCommand extends BaseCommand {
         });
 
         const tagName = interaction.options.getString("tag", true);
-        const tag = await getTag(tagName);
-
-        if(tag == null) return interaction.followUp("That tag could not be found on DanBooru.");
 
         try {
-            await registerTagCommand(tagDefinition(tag.name), interaction.guildId);
+            const r = await removeTagCommand(tagName, interaction.guildId);
+            if(!r) return interaction.followUp(`"${tagName}" was not a tag on your server.`);
         } catch(e) {
             DEFAULT_LOGGER.log(e);
-            return interaction.followUp("An unknown error has occured. The tag could not be added to your server.");
+            return interaction.followUp("An unknown error has occured. The tag might have been removed from your server.");
         }
 
-        return interaction.followUp(`"${tag.name}" has been added to the list of tag commands on your server!`);
+        return interaction.followUp(`"${tagName}" has been removed from the tag commands on your server.`);
     }
 }
 
-export default AddTagCommand;
+export default RemoveTagCommand;
