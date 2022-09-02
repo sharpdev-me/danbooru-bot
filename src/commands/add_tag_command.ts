@@ -41,7 +41,7 @@ class AddTagCommand extends BaseCommand {
             return interaction.followUp("An unknown error has occured. The tag could not be added to your server.");
         }
 
-        return interaction.followUp(`"${tagName}" has been added to the list of tag commands on your server!`);
+        return interaction.followUp(`"${tag.name}" has been added to the list of tag commands on your server!`);
     }
 }
 
