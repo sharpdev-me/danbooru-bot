@@ -37,7 +37,9 @@ const tagHandle = async (interaction: ChatInputCommandInteraction) => {
             }
         }
 
-        getRandomImage(interaction.commandName.replace("t_", ""), true, interaction).then(res => {
+        const s = DEV_ENVIRONMENT ? interaction.commandName.replace("t_", "") : interaction.commandName;
+
+        getRandomImage(s, true, interaction).then(res => {
             if(res.nsfw && !allowNSFW) return interaction.followUp("This server does not allow NSFW images in this channel.");
             return interaction.followUp({
                 files: [
